@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Incremental-Calculation-Of-Shortest-Path-In-Dynamic-Graphs.iml" filepath="$PROJECT_DIR$/Incremental-Calculation-Of-Shortest-Path-In-Dynamic-Graphs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Shortest-Path-In-Dynamic-Graphs.iml" filepath="$PROJECT_DIR$/Shortest-Path-In-Dynamic-Graphs.iml" />
     </modules>
   </component>
 </project>
