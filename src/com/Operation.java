@@ -1,34 +1,17 @@
 package com;
 
+import java.io.Serializable;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
 /**
- * Represents an operation in a batch.
+ * Represents an operation in batch sent by the client.
  */
-public final class Operation {
-    private final int A;
-    private final int B;
-    private final OperationType operationType;
+public interface Operation extends Remote {
 
-    public Operation(int a, int b, OperationType operationType) {
-        this.A = a;
-        this.B = b;
-        this.operationType = operationType;
-    }
+    int getA() throws RemoteException;
+    int getB() throws RemoteException;
+    OperationType getOperationType() throws RemoteException;
 
-    public int getA() {
-        return this.A;
-    }
-
-    public int getB() {
-        return this.B;
-    }
-
-    public OperationType getOperationType() {
-        return this.operationType;
-    }
-
-    public String toString() {
-        return "client.Operation{A=" + this.A + ", B=" + this.B + ", operationType=" + this.operationType + "}";
-    }
-
-    public static enum OperationType { QUERY, ADD, DELETE }
+    enum OperationType implements Serializable { QUERY, ADD, DELETE }
 }

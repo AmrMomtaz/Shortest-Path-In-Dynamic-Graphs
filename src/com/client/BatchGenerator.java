@@ -3,6 +3,7 @@ package com.client;
 import com.Operation;
 import com.Operation.OperationType;
 
+import java.rmi.RemoteException;
 import java.util.Random;
 
 /**
@@ -25,7 +26,7 @@ public class BatchGenerator {
      * First, identify the number of query operations, add and delete operations.
      * Then creating an array of these operations and finally shuffle that array.
      */
-    public static Operation[] generateBatch() {
+    public static Operation[] generateBatch() throws RemoteException {
         Operation[] randomBatch = new Operation[NUMBER_OF_OPERATIONS_PER_BATCH];
         int queryOperations = (int) (QUERY_FREQUENCY * NUMBER_OF_OPERATIONS_PER_BATCH);
         int addOperations = (int) ((NUMBER_OF_OPERATIONS_PER_BATCH - queryOperations) * ADD_FREQUENCY);
@@ -50,10 +51,10 @@ public class BatchGenerator {
     /**
      * Generates a single operation of the given type.
      */
-    private static Operation generateRandomOperation(OperationType type) {
+    private static Operation generateRandomOperation(OperationType type) throws RemoteException {
         int a = random.nextInt(NODES_RANGE);
         int b = random.nextInt(NODES_RANGE);
-        return new Operation(a, b, type);
+        return new OperationImpl(a, b, type);
     }
 
     /**
