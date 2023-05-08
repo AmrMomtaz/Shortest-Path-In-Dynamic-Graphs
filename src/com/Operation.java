@@ -1,5 +1,8 @@
 package com;
 
+/**
+ * Represents an operation in a batch.
+ */
 public final class Operation {
     private final int A;
     private final int B;
