@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This implementation always pre-calculates all the answers in advance and when a
@@ -70,7 +69,7 @@ public class StatefulShortestPath extends ShortestPathAlgorithm {
     }
 
     /**
-     * Clears the old state if necessary and re-calculates all the state.
+     * Clears the old state if necessary and re-calculates the new state.
      */
     @Override
     public void updateStateIfAny() {

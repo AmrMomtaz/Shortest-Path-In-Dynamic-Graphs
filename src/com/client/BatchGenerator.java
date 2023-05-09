@@ -15,21 +15,30 @@ import java.util.Random;
 public class BatchGenerator {
 
     // Generator configuration
-    private static final int NUMBER_OF_OPERATIONS_PER_BATCH = 1000;
-    private static final int NODES_RANGE = 100; // Number of nodes in the graph
-    private static final double QUERY_FREQUENCY = 0.99; // frequency of query operations in the batch (range:[0,1])
-    private static final double ADD_FREQUENCY = 1; // frequency of add operations in all update queries (range:[0,1])
-    private static final Random random = new Random();
+    private final Random random = new Random();
+    private final int numberOfOperationsPerBatch;
+    private final int nodesRange; // Number of nodes in the graph
+    private final double queryFrequency; // Frequency of query operations in the batch (range:[0,1])
+    private final double addFrequency; // Frequency of add operations in all update queries (range:[0,1])
+
+    public BatchGenerator(int numberOfOperationsPerBatch, int nodesRange,
+                          double queryFrequency, double addFrequency) {
+
+        this.numberOfOperationsPerBatch = numberOfOperationsPerBatch;
+        this.nodesRange = nodesRange;
+        this.queryFrequency = queryFrequency;
+        this.addFrequency = addFrequency;
+    }
 
     /**
      * Generates a random batch of operations.
      * First, identify the number of query operations, add and delete operations.
      * Then creating an array of these operations and finally shuffle that array.
      */
-    public static Operation[] generateBatch() throws RemoteException {
-        Operation[] randomBatch = new Operation[NUMBER_OF_OPERATIONS_PER_BATCH];
-        int queryOperations = (int) (QUERY_FREQUENCY * NUMBER_OF_OPERATIONS_PER_BATCH);
-        int addOperations = (int) ((NUMBER_OF_OPERATIONS_PER_BATCH - queryOperations) * ADD_FREQUENCY);
+    public Operation[] generateBatch() throws RemoteException {
+        Operation[] randomBatch = new Operation[numberOfOperationsPerBatch];
+        int queryOperations = (int) (queryFrequency * numberOfOperationsPerBatch);
+        int addOperations = (int) ((numberOfOperationsPerBatch - queryOperations) * addFrequency);
 
         for (int i = 0 ; i < queryOperations ; i++)
             randomBatch[i] = generateRandomOperation(OperationType.QUERY);
@@ -37,7 +46,7 @@ public class BatchGenerator {
         for (int i = queryOperations ; i < queryOperations + addOperations ; i++)
             randomBatch[i] = generateRandomOperation(OperationType.ADD);
 
-        for (int i = queryOperations + addOperations ; i < NUMBER_OF_OPERATIONS_PER_BATCH ; i++)
+        for (int i = queryOperations + addOperations; i < numberOfOperationsPerBatch; i++)
             randomBatch[i] = generateRandomOperation(OperationType.DELETE);
 
         shuffleArray(randomBatch);
@@ -51,19 +60,19 @@ public class BatchGenerator {
     /**
      * Generates a single operation of the given type.
      */
-    private static Operation generateRandomOperation(OperationType type) throws RemoteException {
-        int a = random.nextInt(NODES_RANGE);
-        int b = random.nextInt(NODES_RANGE);
+    private Operation generateRandomOperation(OperationType type) throws RemoteException {
+        int a = random.nextInt(nodesRange);
+        int b = random.nextInt(nodesRange);
         return new OperationImpl(a, b, type);
     }
 
     /**
      * Shuffles the operation array using Fisher-Yates algorithm.
      */
-    private static void shuffleArray(Operation[] array) {
+    private void shuffleArray(Operation[] array) {
         Random random = new Random();
 
-        for (int i = array.length - 1; i > 0; i--) {
+        for (int i = array.length - 1; i > 0 ; i--) {
             int j = random.nextInt(i + 1);
             Operation temp = array[i];
             array[i] = array[j];

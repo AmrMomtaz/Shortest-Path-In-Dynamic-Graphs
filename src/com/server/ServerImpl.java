@@ -18,11 +18,17 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerImpl extends UnicastRemoteObject implements Server {
 
-    private static ShortestPathAlgorithm shortestPathAlgorithm;
-    private static final Logger logger = LogManager.getLogger(Server.class);
-    private static final int MINIMUM_NUMBER_OF_QUERIES_TO_EXECUTE_PARALLEL = 120;
+    private final ShortestPathAlgorithm shortestPathAlgorithm;
+    private final int minimumNumberOfQueriesToExecuteInParallel;
+    private final Logger logger = LogManager.getLogger(Server.class);
 
-    public ServerImpl() throws RemoteException {}
+    public ServerImpl(ShortestPathAlgorithm shortestPathAlgorithm,
+                      int minimumNumberOfQueriesToExecuteInParallel) throws RemoteException {
+        super();
+        this.shortestPathAlgorithm = shortestPathAlgorithm;
+        this.minimumNumberOfQueriesToExecuteInParallel
+                = minimumNumberOfQueriesToExecuteInParallel;
+    }
 
     @Override
     public synchronized List<Integer> executeBatch(Operation[] batch) throws RemoteException {
@@ -33,12 +39,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         List<List<Operation>> splitBatch = splitBatch(batch);
         List<Integer> result = performTransactions(splitBatch);
         logger.info("Batch processed in " + (System.currentTimeMillis() -
-                processingStartTime) + " ms -> " + result);
+                processingStartTime) + " ms -> " /*+ result*/);
         return result;
-    }
-
-    public static void setShortestPathAlgorithm(ShortestPathAlgorithm shortestPathAlgorithm) {
-        ServerImpl.shortestPathAlgorithm = shortestPathAlgorithm;
     }
 
     //
@@ -48,7 +50,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     /**
      * Performs update transactions serially and query transactions parallel
      */
-    private static List<Integer> performTransactions(List<List<Operation>> splitBatch) throws RemoteException {
+    private List<Integer> performTransactions(List<List<Operation>> splitBatch) throws RemoteException {
         List<Integer> result = new ArrayList<>();
         for (List<Operation> transaction : splitBatch) {
             if (transaction.get(0).getOperationType() == OperationType.QUERY)
@@ -64,9 +66,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
      *  serially to overcome the overhead of the parallel execution.
      *  It appends the query results in the given list.
      */
-    private static List<Integer> performQueryTransaction(List<Operation> queryTransaction) throws RemoteException {
+    private List<Integer> performQueryTransaction(List<Operation> queryTransaction) throws RemoteException {
         List<Integer> transactionResult = new ArrayList<>(queryTransaction.size());
-        if (queryTransaction.size() < MINIMUM_NUMBER_OF_QUERIES_TO_EXECUTE_PARALLEL) {
+        if (queryTransaction.size() < minimumNumberOfQueriesToExecuteInParallel) {
             for (Operation operation : queryTransaction)
                 transactionResult.add(performQueryOperation(operation));
         }
@@ -93,7 +95,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
             }
             executor.shutdown();
             try {
-                boolean finishedExecution = executor.awaitTermination(1, TimeUnit.MINUTES);
+                boolean finishedExecution = executor.awaitTermination(2, TimeUnit.MINUTES);
                 if (! finishedExecution) {
                     logger.error("Executor didn't wait for all tasks to finish execution");
                     System.exit(-1);
@@ -102,10 +104,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
                 logger.error(exception.getMessage());
                 System.exit(-1);
             }
-            for (int i = 0 ; i < numThreads ; i++) {
-                if (partialResults.containsKey(i))
-                    transactionResult.addAll(partialResults.get(i));
-            }
+            for (int i = 0 ; i < numThreads ; i++)
+                transactionResult.addAll(partialResults.get(i));
         }
         return transactionResult;
     }
@@ -113,10 +113,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     /**
      * Performs a single query operation and appends the result to the list.
      */
-    private static int performQueryOperation(Operation queryOperation) throws RemoteException {
+    private int performQueryOperation(Operation queryOperation) throws RemoteException {
         if (queryOperation.getOperationType() != OperationType.QUERY) {
-            String errorMessage = "Received UPDATE operation in query transaction";
-            logger.error(errorMessage);
+            logger.error("Received UPDATE operation in query transaction");
             System.exit(-1);
         }
         return shortestPathAlgorithm.queryShortestPath
@@ -126,16 +125,14 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
     /**
      * Divides the queryOperations to number of parts.
      */
-    private static List<List<Operation>> divideList(List<Operation> list, int numParts) {
+    private List<List<Operation>> divideList(List<Operation> list, int numParts) {
         int listSize = list.size();
         int partitionSize = (int) Math.floor((double) listSize / numParts);
         List<List<Operation>> partitions = new ArrayList<>();
-        for (int i = 0 ; i < listSize ; i += partitionSize) {
+        for (int i = 0 ; i < listSize ; i += partitionSize)
             partitions.add(list.subList(i, Math.min(i + partitionSize, listSize)));
-        }
-        while (partitions.size() < numParts) {
+        while (partitions.size() < numParts)
             partitions.add(new ArrayList<>());
-        }
         return partitions;
     }
 
@@ -143,7 +140,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
      * Performs a single update transaction serially and updates the
      * ShortestPathAlgorithm state after processing the transaction.
      */
-    private static void performUpdateTransaction(List<Operation> updateTransaction) throws RemoteException {
+    private void performUpdateTransaction(List<Operation> updateTransaction) throws RemoteException {
         for (Operation operation : updateTransaction) {
             switch (operation.getOperationType()) {
                 case ADD ->
@@ -163,7 +160,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
      * Accumulates consecutive updates in a single list and consecutive queries
      * in a single list in order to discriminate between these two types of operations.
      */
-    private static List<List<Operation>> splitBatch(Operation[] batch) throws RemoteException {
+    private List<List<Operation>> splitBatch(Operation[] batch) throws RemoteException {
         List<List<Operation>> splitList = new ArrayList<>();
         List<Operation> currentSplit = new ArrayList<>();
         for (Operation currentOperation : batch) {
@@ -182,10 +179,11 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
                 currentSplit.add(currentOperation);
             }
         }
+        if (! currentSplit.isEmpty()) splitList.add(currentSplit);
         return splitList;
     }
 
-    private static String getBatchContent(Operation[] batch) throws RemoteException {
+    private String getBatchContent(Operation[] batch) throws RemoteException {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < batch.length; i++) {
