@@ -8,7 +8,8 @@ import java.util.Scanner;
 
 /**
  * Abstract class for algorithms to find the shortest path between nodes in a
- * dynamic directed unweighted graph.
+ * dynamic directed unweighted graph. The main algorithm used is BFS but the key
+ * difference between the different implementations in teh use of cache.
  */
 public abstract class ShortestPathAlgorithm {
 
@@ -34,7 +35,8 @@ public abstract class ShortestPathAlgorithm {
     public abstract void deleteEdge(int a, int b);
 
     /**
-     * Returns the shortest path between two nodes.
+     * Returns the shortest path between two nodes and -1 if the two nodes aren't
+     * connected.
      */
     public abstract int queryShortestPath(int a, int b);
 

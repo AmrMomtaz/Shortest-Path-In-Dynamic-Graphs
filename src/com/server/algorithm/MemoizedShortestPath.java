@@ -5,33 +5,30 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This implementation is compromise between the two extremes server.algorithm.StatefulShortestPath &
- * server.algorithm.StatelessShortestPath. It keeps building a state while answering queries such
- * that if a query is already answered before we won't need to calculate it again.
+ * This implementation is compromise between the two extremes StatefulShortestPath &
+ * StatelessShortestPath. It caches results in the state while serving queries such
+ * that if a query is already served before, no need to re-calculate it.
  *
  * Steps:
- * 1) The algorithm performs BFS to find the shortest path between nodes.
- * 2) If the given nodes aren't connected, it returns -1.
- * 3) The state stores pre-calculated results (it is initially empty).
- * 4) When a new query comes, We first check whether the answer is already
- *    calculated in the state (so we return it immediately) or not.
- * 5) If not, we perform BFS to find the shortest path between node A and B.
- * 6) While performing the BFS, once we got the answer, we break execution (we don't
+ * 1) Stores pre-calculated results (it is initially empty).
+ * 2) When a new query comes, checks whether the answer is cached in the state.
+ * 3) If not, performs BFS to find the shortest path between node A and B.
+ * 4) While performing the BFS, once reaching the answer, breaks execution (doesn't
  *    proceed finding the shortest path between A and other nodes).
- *    OPTIONAL: We can save state where to carry on execution next time.
- * 7) If the execution is competed and wasn't broken (because B isn't connected to A).
- *    We mark that we finished execution for node A (handled in completedExecution HashSet).
- *    Such that if the state didn't contain the answer of the query while we've already
- *    finished execution for A before, we would know that A & B aren't connected.
- * 8) If we've modified the graph (either by adding or removing edges), the state is
- *    cleared along with the completedExecution hashset except in the following cases:
- *        i) We've added an edge which existed before.
- *        ii) We've added an edge which involves creating a new node.
- *        iii) We've removed an edge which didn't exist.
+ *    OPTIONAL: We can save state where to carry on execution next time but adds more overhead.
+ * 5) If the execution is completed and wasn't broken (because B isn't connected to A).
+ *    Marks that the execution for node A is completed (handled in completedExecution HashSet).
+ *    Such that if the state didn't contain an entry for the query while having the
+ *    execution for A finished, we would know that A & B aren't connected.
+ * 6) If the graph is modified (either by adding or removing edges), the state is
+ *    cleared along with the completedExecution set except in the following cases:
+ *        i) Edges which existed before are added.
+ *        ii) Edges which involve creating a new node are added.
+ *        iii) Edges which didn't exist before are deleted.
  *
  * Notes:
- * 1) This implementation has the best performance in normal circumstances.
- * 2) This implementation has the most code complexity.
+ * 1) Has the best performance in normal circumstances.
+ * 2) Has the most code complexity.
  */
 public class MemoizedShortestPath extends ShortestPathAlgorithm {
 

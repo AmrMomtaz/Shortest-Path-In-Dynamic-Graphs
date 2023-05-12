@@ -14,13 +14,14 @@ import java.util.Queue;
  * 1) When a query is sent we just fetch the answer from the state.
  * 2) If the state doesn't contain the answer we would know that the nodes aren't
  *    connected, and we would return -1 in that case.
- * 3) After updating the graph, we always update the state to be consistent.
- * 4) We don't update the state if the updates done involves adding an edge which
+ * 3) After updating the graph, updates the state to be consistent.
+ * 4) Doesn't update the state if the updates done involves adding an edge which
  *    already exists or removing an edge which didn't exist before.
  *
  * Notes:
- * 1) It's the fastest when the there is large number of queries and low number of updates.
- * 2) It uses the largest space to save the whole state each time.
+ * 1) The fastest implementation when there are large number of queries and low
+ *    number of updates.
+ * 2) Uses the largest memory space to save the whole state each time.
  */
 public class StatefulShortestPath extends ShortestPathAlgorithm {
 
@@ -69,12 +70,12 @@ public class StatefulShortestPath extends ShortestPathAlgorithm {
     }
 
     /**
-     * Clears the old state if necessary and re-calculates the new state.
+     * Clears the old state re-calculates the new one if necessary.
      */
     @Override
     public void updateStateIfAny() {
         if (shouldUpdateState) {
-            // Clearing the state
+            // Clears the state
             this.state.clear();
             this.shouldUpdateState = false;
 

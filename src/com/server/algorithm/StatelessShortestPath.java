@@ -6,7 +6,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * This implementation doesn't keep any state.
+ * This implementation doesn't keep any state or cache and calculates all the
+ * incoming queries each time.
  *
  * Steps:
  * 1) When a query comes we calculate the result each time.
