@@ -31,10 +31,6 @@ public final class OperationImpl extends UnicastRemoteObject implements Operatio
 
     @Override
     public String toString() {
-        return "Operation{" +
-                "A=" + A +
-                ", B=" + B +
-                ", operationType=" + operationType +
-                '}';
+        return "{" + A + ", " + B + ", " + operationType +'}';
     }
 }

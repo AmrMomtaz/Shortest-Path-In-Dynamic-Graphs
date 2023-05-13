@@ -4,8 +4,16 @@ import com.server.algorithm.MemoizedShortestPath;
 import com.server.algorithm.ShortestPathAlgorithm;
 import com.server.algorithm.StatefulShortestPath;
 import com.server.algorithm.StatelessShortestPath;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import java.io.*;
 import java.rmi.AlreadyBoundException;
@@ -23,7 +31,7 @@ public class Main {
     private static final String PROPERTIES_FILE_NAME = "system.properties";
     private static final String ARTIFACT_PATH = System.getProperty("user.dir") +
             "\\out\\artifacts\\client_jar";
-    private static final Logger logger = LogManager.getLogger(Server.class);
+    private static Logger logger;
 
     public static void main(String[] args) throws IOException {
         // Reading and setting system properties
@@ -39,6 +47,7 @@ public class Main {
         final int MINIMUM_NUMBER_OF_QUERIES_TO_EXECUTE_PARALLEL
                 = Integer.parseInt(systemProperties.get("server.minNumberOfQueriesToExecuteParallel"));
         final String SERVER_REGISTRY_KEY = systemProperties.get("server.registryKey");
+        final int SERVER_NUM_OF_THREADS = Integer.parseInt(systemProperties.get("server.numOfThreads"));
 
         // Client properties
         final int CLIENT_COUNT = Integer.parseInt(systemProperties.get("client.count"));
@@ -48,6 +57,8 @@ public class Main {
         final String CLIENT_NODES_RANGE = systemProperties.get("client.nodesRange");
         final String CLIENT_QUERY_FREQUENCY = systemProperties.get("client.queryFrequency");
         final String CLIENT_ADD_FREQUENCY = systemProperties.get("client.addFrequency");
+
+        initializeLoggerConfigs();
 
         // Starting RMI registry on localhost
         logger.info("Starting the RMI registry on localhost and port number [" + REGISTRY_PORT_NUMBER + "]");
@@ -72,14 +83,14 @@ public class Main {
             }
         }
         Server server = new ServerImpl
-                (shortestPathAlgorithm, MINIMUM_NUMBER_OF_QUERIES_TO_EXECUTE_PARALLEL);
+                (shortestPathAlgorithm, MINIMUM_NUMBER_OF_QUERIES_TO_EXECUTE_PARALLEL,
+                 SERVER_NUM_OF_THREADS);
         try {
             registry.bind(SERVER_REGISTRY_KEY, server);
         } catch (AlreadyBoundException e) {
             registry.rebind(SERVER_REGISTRY_KEY, server);
         }
         logger.info("Server started successfully");
-
 
         for (int clientID = 1 ; clientID <= CLIENT_COUNT ; clientID++) {
             // Creating and running the clients processes
@@ -111,5 +122,37 @@ public class Main {
         }
         scanner.close();
         return systemProperties;
+    }
+
+    /**
+     * Sets up the logger configurations
+     */
+    private static void initializeLoggerConfigs() {
+        ConfigurationBuilder<BuiltConfiguration> builder
+                = ConfigurationBuilderFactory.newConfigurationBuilder();
+
+        // Configuring the layout style
+        LayoutComponentBuilder layoutBuilder = builder
+                .newLayout("PatternLayout")
+                .addAttribute("pattern", "%d{yyyy-MM-dd HH:mm:ss} [%-5p] %c{1}:%L - %m%n");
+
+        // Adding File and Console appenders
+        AppenderComponentBuilder consoleAppenderBuilder = builder
+                .newAppender("Console", "CONSOLE")
+                .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT)
+                .add(layoutBuilder);
+        AppenderComponentBuilder fileAppenderBuilder = builder
+                .newAppender("File", "File")
+                .addAttribute("fileName", "server.log")
+                .addAttribute("append", false)
+                .add(layoutBuilder);
+        builder.add(consoleAppenderBuilder)
+                .add(fileAppenderBuilder)
+                .add(builder.newRootLogger(Level.INFO)
+                .add(builder.newAppenderRef("File"))
+                .add(builder.newAppenderRef("Console")));
+
+        Configurator.initialize(builder.build());
+        logger = LogManager.getLogger(Server.class);
     }
 }

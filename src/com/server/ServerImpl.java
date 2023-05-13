@@ -18,16 +18,20 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerImpl extends UnicastRemoteObject implements Server {
 
+    private final Logger logger;
     private final ShortestPathAlgorithm shortestPathAlgorithm;
     private final int minimumNumberOfQueriesToExecuteInParallel;
-    private final Logger logger = LogManager.getLogger(Server.class);
+    private final int numOfThreads;
 
     public ServerImpl(ShortestPathAlgorithm shortestPathAlgorithm,
-                      int minimumNumberOfQueriesToExecuteInParallel) throws RemoteException {
+                      int minimumNumberOfQueriesToExecuteInParallel,
+                      int numOfThreads) throws RemoteException {
         super();
         this.shortestPathAlgorithm = shortestPathAlgorithm;
         this.minimumNumberOfQueriesToExecuteInParallel
                 = minimumNumberOfQueriesToExecuteInParallel;
+        this.numOfThreads = numOfThreads;
+        this.logger = LogManager.getLogger(Server.class);
     }
 
     @Override
@@ -39,7 +43,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         List<List<Operation>> splitBatch = splitBatch(batch);
         List<Integer> result = performTransactions(splitBatch);
         logger.info("Batch processed in " + (System.currentTimeMillis() -
-                processingStartTime) + " ms -> " /*+ result*/);
+                processingStartTime) + " ms -> " + result);
         return result;
     }
 
@@ -73,11 +77,10 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
                 transactionResult.add(performQueryOperation(operation));
         }
         else {
-            int numThreads = Runtime.getRuntime().availableProcessors();
-            List<List<Operation>> dividedList = divideList(queryTransaction, numThreads);
-            ConcurrentHashMap<Integer, List<Integer>> partialResults = new ConcurrentHashMap<>(numThreads);
-            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-            for (int i = 0 ; i < numThreads ; i++) {
+            List<List<Operation>> dividedList = divideList(queryTransaction, numOfThreads);
+            ConcurrentHashMap<Integer, List<Integer>> partialResults = new ConcurrentHashMap<>(numOfThreads);
+            ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
+            for (int i = 0 ; i < numOfThreads ; i++) {
                 List<Operation> queryOperations = dividedList.get(i);
                 final int finalI = i;
                 executor.submit(() -> {
@@ -104,7 +107,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
                 logger.error(exception.getMessage());
                 System.exit(-1);
             }
-            for (int i = 0 ; i < numThreads ; i++)
+            for (int i = 0 ; i < numOfThreads ; i++)
                 transactionResult.addAll(partialResults.get(i));
         }
         return transactionResult;
@@ -188,8 +191,8 @@ public class ServerImpl extends UnicastRemoteObject implements Server {
         sb.append("[");
         for (int i = 0; i < batch.length; i++) {
             Operation operation = batch[i];
-            sb.append("Operation{" + "A=").append(operation.getA()).append(", B=")
-                    .append(operation.getB()).append(", operationType=")
+            sb.append("{").append(operation.getA()).append(", ")
+                    .append(operation.getB()).append(", ")
                     .append(operation.getOperationType()).append('}');
             if (i < batch.length - 1)  sb.append(", ");
         }

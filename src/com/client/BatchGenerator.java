@@ -7,15 +7,15 @@ import java.rmi.RemoteException;
 import java.util.Random;
 
 /**
- * Generates random batches of three types operation (add,remove,query) as following:
- *    i) Add (A) -> Adds new edge in the graph
- *    ii) Delete (D) -> deletes an edge in the graph
- *    iii) Query (Q) -> queries the shortest path between two nodes in the graph
+ * Generates random batches of three types operation (ADD, REMOVE, QUERY) as following:
+ *    i) Add -> Adds new edge in the graph
+ *    ii) Delete -> deletes an edge in the graph
+ *    iii) Query -> queries the shortest path between two nodes in the graph
  */
 public class BatchGenerator {
 
     // Generator configuration
-    private final Random random = new Random();
+    private final Random random;
     private final int numberOfOperationsPerBatch;
     private final int nodesRange; // Number of nodes in the graph
     private final double queryFrequency; // Frequency of query operations in the batch (range:[0,1])
@@ -24,6 +24,7 @@ public class BatchGenerator {
     public BatchGenerator(int numberOfOperationsPerBatch, int nodesRange,
                           double queryFrequency, double addFrequency) {
 
+        this.random = new Random();
         this.numberOfOperationsPerBatch = numberOfOperationsPerBatch;
         this.nodesRange = nodesRange;
         this.queryFrequency = queryFrequency;
