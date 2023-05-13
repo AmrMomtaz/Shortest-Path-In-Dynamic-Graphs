@@ -46,10 +46,9 @@ public class Client {
     public static void main(String[] args) throws InterruptedException, RemoteException, NotBoundException {
         initializeLoggerConfigs(args[0]);
         if (args.length != 10) {
-            logger.error("Invalid number of arguments entered");
+            logger.error("Invalid number of arguments");
             System.exit(-1);
         }
-        initializeLoggerConfigs(args[0]);
         Registry registry = LocateRegistry.getRegistry(args[1], Integer.parseInt(args[2]));
         Server server = (Server) registry.lookup(args[3]);
         final int maximumCooldown = Integer.parseInt(args[4]);

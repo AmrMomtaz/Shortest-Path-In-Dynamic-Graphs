@@ -43,7 +43,7 @@ public class Main {
 
         // Server properties
         final String INITIAL_GRAPH_FILENAME = systemProperties.get("server.initialGraphFileName");
-        final String SHORTEST_PATH_ALGORITHM = systemProperties.get("server.shortestPathAlgorithm");
+        final String SHORTEST_PATH_ALGORITHM = systemProperties.get("server.shortestPathAlgorithm").toLowerCase();
         final int MINIMUM_NUMBER_OF_QUERIES_TO_EXECUTE_PARALLEL
                 = Integer.parseInt(systemProperties.get("server.minNumberOfQueriesToExecuteParallel"));
         final String SERVER_REGISTRY_KEY = systemProperties.get("server.registryKey");
