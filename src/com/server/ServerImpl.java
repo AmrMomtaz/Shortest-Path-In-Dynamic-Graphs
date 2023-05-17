@@ -16,6 +16,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Implementation of the Server interface.
+ */
 public class ServerImpl extends UnicastRemoteObject implements Server {
 
     private final Logger logger;

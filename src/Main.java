@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 /**
- * Configures and runs the server and clients.
+ * Configures and runs RMI registry, the server and clients in separate processes.
  */
 public class Main {
 
@@ -108,6 +108,9 @@ public class Main {
     // Private Methods
     //
 
+    /**
+     * Returns a map which contains all the system properties.
+     */
     private static HashMap<String, String> readSystemProperties() throws FileNotFoundException {
         HashMap<String, String> systemProperties = new HashMap<>();
         Scanner scanner = new Scanner(new File(Objects.requireNonNull(Main.class.getClassLoader()

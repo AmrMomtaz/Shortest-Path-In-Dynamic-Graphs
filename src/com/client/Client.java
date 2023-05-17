@@ -23,7 +23,7 @@ import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 
 /**
- * Represents the client
+ * Represents the client which generates a random batch and submit it to the server.
  */
 public class Client {
 
@@ -60,11 +60,15 @@ public class Client {
             long startGenerationTime = System.currentTimeMillis();
             Operation[] batch = batchGenerator.generateBatch();
             logger.info(" New batch generated in " +
-                    (System.currentTimeMillis() - startGenerationTime) + " ms");
-            logger.info(" Generated batch -> " + Arrays.toString(batch));
+                    (System.currentTimeMillis() - startGenerationTime) + " ms -> "
+                     + Arrays.toString(batch));
 
+            long startSubmitTime = System.currentTimeMillis();
             List<Integer> result = server.executeBatch(batch);
-            logger.info(" Received response -> " + result);
+            logger.info((System.currentTimeMillis() - startSubmitTime));
+            logger.info(" Received response after " +
+                        (System.currentTimeMillis() - startSubmitTime)
+                        + "ms -> " + result);
 
             int cooldown = random.nextInt
                     (maximumCooldown - minimumCooldown) + minimumCooldown;

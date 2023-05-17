@@ -5,6 +5,9 @@ import com.Operation;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * Implementation of the Operation interface.
+ */
 public final class OperationImpl extends UnicastRemoteObject implements Operation {
     private final int A;
     private final int B;
