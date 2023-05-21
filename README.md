@@ -420,17 +420,17 @@ The following values are fixed:
 ## Conclusions
 
 From the previous results we can conclude the following:
-    * The memoized implementation is the best one among the
-    three. It has a very good performance whether we have a
-    balanced, high update load or high query load.
-    * The stateless has the best performance when we have a
-    high update load on the graph.
-    * The stateful has the best performance when we have a
-    high query load. Especially, the graph iis fixed without any updates and it
-    is only queried.
-    * The parallelization has improved the runtime. The
-    speedup will be improved more when having a larger
-    number of consucitive queries and denser graphs.
-    * Increasing the number of threads doesn’t necessarily
-    increase the speedup. Since it adds more overhead for the
-    creation of the threads and dividing the tasks and combining the results.
+   * The memoized implementation is the best one among the
+   three. It has a very good performance whether we have a
+   balanced, high update load or high query load.
+   * The stateless has the best performance when we have a
+   high update load on the graph.
+   * The stateful has the best performance when we have a
+   high query load. Especially, the graph iis fixed without any updates and it
+   is only queried.
+   * The parallelization has improved the runtime. The
+   speedup will be improved more when having a larger
+   number of consucitive queries and denser graphs.
+   * Increasing the number of threads doesn’t necessarily
+   increase the speedup. Since it adds more overhead for the
+   creation of the threads and dividing the tasks and combining the results.
