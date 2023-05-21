@@ -219,3 +219,43 @@ client's log files are created in the same location of the jar file
 which runs the client. The server log file name is “server.log”
 and the client’s is “client{ID}.log” where {ID} is the client’s
 identifier.
+
+## How to run
+
+I’ve run the project on **IntelliJ IDEA** on **Windows 10** using **Java JDK
+18**. 
+The project depends on _apache.logging.log4j.core 2.20_ and
+_JUnit5.8.1_.
+If you want to run on another OS you will have to
+change the process builder command in _Main.java_ according to
+the OS.
+
+To run the client, the client’s jar file must be created. I’ve
+configured the IDE to create the client.jar which you might need
+to set it. 
+The jar is by default created in the artifact path. The
+process builder uses the default artifact path to run the
+command from. Just change it if the jar isn’t in its default
+location according to the location of the jar.
+
+The RMI registry runs on localhost on a separate process
+created by Main.java. If it’s already running on a different
+machine. You will have to change the _Main.java_ to locate it
+using its IP and port number. You will also have to configure the
+_SSH_ between the machine running the RMI registry process.
+
+**Steps:**
+   1) The initial graph file must have the same format and
+   MUST exist in the resources directory.
+   2) Configure _the system.properties_ which MUST exist in the
+   resources and must be as following:
+      1) All the properties must be set in the file with the
+      same format.
+      2) _server.shortestPathAlgorithm_ property must be set to
+      be {“_stateless_”, “_stateful_”, “_memoized_”}.
+      3) The number of threads must be less than or equal to
+      the minimum number of query operations to
+      parallelize. This is to avoid runtime errors.
+   3) Build the client jar (it must be located in the default
+   artifact path or change the path as mentioned above).
+   4) Run Main.java
