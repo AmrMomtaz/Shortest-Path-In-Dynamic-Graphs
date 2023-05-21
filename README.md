@@ -259,3 +259,100 @@ _SSH_ between the machine running the RMI registry process.
    3) Build the client jar (it must be located in the default
    artifact path or change the path as mentioned above).
    4) Run Main.java
+
+## Evaluation
+
+This section contains the comparison between different
+variations of the system.
+The first part contains measures of
+response time between the different implementations of the
+shortest path algorithm.
+The second part contains the
+evaluation of the parallelism.
+The third part contains the
+stress testing between different numbers of clients varying
+from 5 to 15 clients and their average response time.
+
+In all the tables we measure the average response time in (ms).
+The same initial graph is used for all the evaluations which is as follows:
+
+![image](https://github.com/AmrMomtaz/Shortest-Path-In-Dynamic-Graphs/assets/61145262/a9fbecbf-a363-4755-b7e8-034d674c2e66)
+
+### **1) Evaluating the different shortest path algorithm implementation**
+In this part, a comparison of the different implementations will
+be held while varying the number of queries in the batch and
+the number of updates.
+We will fix the following parameters:
+* The number of operations will be fixed to be 1,000
+operations per batch.
+* The number of nodes in the graph is 50.
+* No parallelism.
+* Number of generated batches will be 20 batches.
+We will vary only the query frequency and the add frequency.
+
+#### **First Configuration (balanced):**
+_Query frequency = 0.5 & Add frequency = 0.5_
+
+| **Batches** | **Stateless** | **Memoized** | **Stateful** |
+| ------- | --------- | -------- | -------- |
+| 5       | 76        | 93       | 2,845     |
+| 10      | 66        | 75       | 3,092     |
+| 15      | 66        | 77       | 3,088     |
+| 20      | 65        | 78       | 3,034     |
+| **Average** | **69**      | **81**       | **3,015**     |
+
+#### **Second Configuration (high query load):**
+_Query frequency = 0.8 & Add frequency = 0.7_
+
+| **Batch** | **Stateless** | **Memoized** | **Stateful** |
+| ----- | --------- | -------- | -------- |
+| **5**     | 115       | 113      | 1,422     |
+| **10**    | 96        | 119      | 1,547     |
+| **15**    | 108       | 113      | 1,544     |
+| **20**    | 107       | 113      | 1,522     |
+| **Average** | **107**  | **115**      | **1,501**     |
+
+#### **Third Configuration (high update load):**
+_Query frequency = 0.15 & Add frequency = 0.7_
+
+| **Batch** | **Stateless** | **Memoized** | **Stateful** |
+| ----- | --------- | -------- | -------- |
+| **5**     | 33        | 34       | 2,179     |
+| **10**    | 23        | 31       | 2,240     |
+| **15**    | 24        | 30       | 2,256     |
+| **20**    | 24        | 27       | 2,288     |
+| **Average** | **26**   | **31**       | **2,241**     |
+
+#### **Forth Configuration (high update load with no delete):**
+_Query frequency = 0.15 & Add frequency = 1_
+
+| **Batch** | **Stateless** | **Memoized** | **Stateful** |
+| ----- | --------- | -------- | -------- |
+| **5**     | 32        | 28       | 351      |
+| **10**    | 27        | 3        | 1        |
+| **15**    | 26        | 3        | 1        |
+| **20**    | 27        | 3        | 1        |
+| **Average without the first 5 batches** | **27** | **3** | **1** |
+
+### **2) Evaluating the parallelism**
+
+The main goal of this part is to evaluate the effect of
+parallelism. We will fix the following:
+   * Number of operations will be fixed to be 100,000
+   operations per each random batch generated.
+   * Number of nodes in the graph is 200.
+   * Query frequency is 0.9.
+   * Add frequency is 1.
+   * Number of generated batches will be 5 batches.
+   * Shortest path algorithm is stateless.
+   * The minimum number of queries to parallelize is equal to
+   the number of threads.
+
+| **Batch** | **1 thread** | **2 threads** | **4 threads** | **6 threads** | **12 threads** |
+| ----- | -------- | --------- | --------- | --------- | ---------- |
+| **1**     | 5,646     | 7,564      | 5,923      | 6,200      | 7,743       |
+| **2**     | 13,628    | 11,887     | 9,438      | 9,117      | 11,421      |
+| **3**     | 18,125    | 14,709     | 11,482     | 10,913     | 13,461      |
+| **4**     | 21,219    | 15,980     | 12,446     | 11,962     | 14,312      |
+| **5**     | 21,419    | 16,098     | 12,666     | 12,452     | 14,873      |
+| **Average** | **16,007** | **13,247**    | **10,391**    | **10,128**    | **12,362**     |
