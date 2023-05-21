@@ -81,3 +81,112 @@ This section contains the overall structure of the project:
         interface which uses an object of
         _ShortestPathAlgorithm_ to serve the incoming
         batch from the clients.
+
+## Shoretest Path Algorithm
+
+This section contains descriptions for the different shortest
+path algorithm implementations used.
+The main algorithm to find the shortest path between two
+nodes in an unweighted directed graph is to use
+**breadth-first-search (BFS)** which is used in the three different
+implementations. The key difference between the three
+implementations is whether we will use caching and
+pre-calculated results or not.
+The three implementations are as follows:
+* **StatelessShortestPath:** doesn’t keep any state or cache
+and calculates each incoming query.
+   * **Steps:**
+      1) When a query comes, calculates the result each
+      time.
+      2) There is no state or anything that needs to be
+      updated after updating the graph.
+      3) We just perform BFS each time a query comes.
+   * **Notes:**
+      * works the best when there are a lot of updates
+      and low number of queries.
+      * Finding the shortest path between two
+      unconnected nodes consumes a lot of time.
+      * The simplest implementation among the three.
+* **StatefulShortestPath:** Always pre-calculates all the
+answers in advance and when a query comes it just
+fetches the answer from the state.
+   * **Steps:**
+      1) When a query is sent we just fetch the answer
+      from the state.
+      2) If the state doesn't contain the answer we would
+      know that the nodes aren't connected, and we
+      would return -1 in that case.
+      3) After updating the graph, updates the state to be
+      consistent.
+      4) Doesn't update the state if the updates done
+      involve adding an edge which already exists or
+      removing an edge which didn't exist before.
+   * **Notes:**
+      * The fastest implementation when there are a
+      large number of queries and low number of
+      updates.
+      * Uses the largest memory space to save the
+      whole state each time.
+* **MemoizedShortestPath:** Compromise between the two
+extremes _StatefulShortestPath_ & _StatelessShortestPath_.
+Caches result in the state while serving queries such that
+if a query is already served before, no need to re-calculate
+it.
+   * **Steps:**
+      1) Stores pre-calculated results (it is initially
+      empty).
+      2) When a new query comes, checks whether the
+      answer is cached in the state.
+      3) If not, performs BFS to find the shortest path
+      between node A and B.
+      4) While performing the BFS, once reaching the
+      answer, breaks execution (doesn't proceed
+      finding the shortest path between A and other
+      nodes).
+      **OPTIONAL**: We can save state where to carry on
+      execution next time this adds more space
+      overhead.
+      5) If the execution is completed and wasn't broken
+      (because B isn't connected to A). Marks that the
+      execution for node A is completed (handled in
+      completedExecution HashSet). Such that if the
+      state didn't contain an entry for the query while
+      having the execution for A finished, we would
+      know that A & B aren't connected.
+      6) If the graph is modified (either by adding or
+      removing edges), the state is cleared along with
+      the completedExecution set except in the
+      following cases:
+         * Edges which existed before are added.
+         * Edges which involve creating a new node
+         are added.
+         * Edges which didn't exist before are deleted.
+   * **Notes:**
+      * Has the best performance in normal
+      circumstances.
+      * Has the most code complexity.
+
+## Parallelization & Batch Processing:
+
+This section contains how the server handles the incoming
+batch and how it uses parallelization.
+First of all, the client sends a batch of operations of different
+types with any order. The server only handles one client at a
+time.
+The server receives this batch of operation (using RMI). It
+aggregates the consecutive query operations in a list and the
+consecutive update operations (add or delete) in a list and it
+groups all these lists in one single list (list of lists) while
+preserving the order of the initial batch.
+It uses this list and for each group of update operations it
+performs the update transaction and the same for the query
+transaction (transaction means a group of operations of similar
+type).
+For the update transaction, It performs the operations on the
+graph serially. It cannot be parallelized for the correctness of
+the system.
+For the query transaction, It checks whether the number of
+operations in this transaction is less than a configured number
+in the system properties. If so, it performs the transaction
+serially. Otherwise, it performs it in parallel using the
+pre-defined number of threads.
