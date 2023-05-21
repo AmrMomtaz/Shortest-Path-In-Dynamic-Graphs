@@ -166,7 +166,7 @@ it.
       circumstances.
       * Has the most code complexity.
 
-## Parallelization & Batch Processing:
+## Parallelization & Batch Processing
 
 This section contains how the server handles the incoming
 batch and how it uses parallelization.
@@ -190,3 +190,32 @@ operations in this transaction is less than a configured number
 in the system properties. If so, it performs the transaction
 serially. Otherwise, it performs it in parallel using the
 pre-defined number of threads.
+
+## Logging
+
+**Log4j2** as the system logger. The logs are displayed
+in the system console and also written in log files.
+
+**For the server**, it logs when the RMI registry is initialized
+successfully and the remote object is created and binded and
+the server is running. If any error occurred it’s shown also.
+When the server receives a batch from the client. It logs the
+incoming batch with its content and it logs the processing time
+along with the result of the batch having the following format
+as an example:
+
+![image](https://github.com/AmrMomtaz/Shortest-Path-In-Dynamic-Graphs/assets/61145262/dc714afb-5fc3-4cff-a9c4-a7ecc6ab4bac)
+
+
+**For the client**, it logs the generation of a new batch along with
+the time taken for its generation and its content. Then it logs
+the response received from the server. Here is an example of
+the client's logs:
+
+![image](https://github.com/AmrMomtaz/Shortest-Path-In-Dynamic-Graphs/assets/61145262/f6f7bdb6-068e-4da5-a277-48787ead5d85)
+
+The server log file is created in the content root path while the
+client's log files are created in the same location of the jar file
+which runs the client. The server log file name is “server.log”
+and the client’s is “client{ID}.log” where {ID} is the client’s
+identifier.
