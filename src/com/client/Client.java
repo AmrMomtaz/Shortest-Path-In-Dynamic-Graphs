@@ -65,7 +65,6 @@ public class Client {
 
             long startSubmitTime = System.currentTimeMillis();
             List<Integer> result = server.executeBatch(batch);
-            logger.info((System.currentTimeMillis() - startSubmitTime));
             logger.info(" Received response after " +
                         (System.currentTimeMillis() - startSubmitTime)
                         + "ms -> " + result);
