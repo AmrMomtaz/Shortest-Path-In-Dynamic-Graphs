@@ -26,22 +26,22 @@ input and files, and the output must appear on the standard output and files.
 
 There are three operations that are applied to the original graph which can be produced by any sequence. 
 The three operation types are as follows: 
-    * 'Q'/query: this operation needs to be answered with the distance of the shortest 
-    (directed) path from the first node to the second node in the current graph. The answer 
-    should appear as output in the form of a single line containing the decimal ASCII 
-    representation of the integer distance between the two nodes, i.e., the number of edges 
-    on a shortest directed path between them. If there is no path between the nodes or if 
-    either of the nodes does not exist in the graph, the answer should be -1. The distance 
-    between any node and itself is always 0. 
-    * 'A'/add: This operation requires you to modify your current graph by adding another 
-    edge from the first node in the operation to the second. As was the case during the 
-    input of the original graph input, if the edge already exists, the graph remains 
-    unchanged. If one (or both) of the specified endpoints of the new edge does not exist in 
-    the graph, it should be added. This operation should not produce any output. 
-    * 'D'/delete: This operation requires you to modify your current graph by removing the 
-    edge from the first node in the operation to the second. If the specified edge does not 
-    exist in the graph, the graph should remain unchanged. This operation should not 
-    produce any output.
+   * 'Q'/query: this operation needs to be answered with the distance of the shortest 
+   (directed) path from the first node to the second node in the current graph. The answer 
+   should appear as output in the form of a single line containing the decimal ASCII 
+   representation of the integer distance between the two nodes, i.e., the number of edges 
+   on a shortest directed path between them. If there is no path between the nodes or if 
+   either of the nodes does not exist in the graph, the answer should be -1. The distance 
+   between any node and itself is always 0. 
+   * 'A'/add: This operation requires you to modify your current graph by adding another 
+   edge from the first node in the operation to the second. As was the case during the 
+   input of the original graph input, if the edge already exists, the graph remains 
+   unchanged. If one (or both) of the specified endpoints of the new edge does not exist in 
+   the graph, it should be added. This operation should not produce any output. 
+   * 'D'/delete: This operation requires you to modify your current graph by removing the 
+   edge from the first node in the operation to the second. If the specified edge does not 
+   exist in the graph, the graph should remain unchanged. This operation should not 
+   produce any output.
 
 ## Project Structure
 
@@ -245,20 +245,20 @@ using its IP and port number. You will also have to configure the
 _SSH_ between the machine running the RMI registry process.
 
 **Steps:**
-    1) The initial graph file must have the same format and
-    MUST exist in the resources directory.
-    2) Configure _the system.properties_ which MUST exist in the
-    resources and must be as following:
-        1) All the properties must be set in the file with the
-        same format.
-        2) _server.shortestPathAlgorithm_ property must be set to
-        be {“_stateless_”, “_stateful_”, “_memoized_”}.
-        3) The number of threads must be less than or equal to
-        the minimum number of query operations to
-        parallelize. This is to avoid runtime errors.
-    3) Build the client jar (it must be located in the default
-    artifact path or change the path as mentioned above).
-    4) Run Main.java
+   1) The initial graph file must have the same format and
+   MUST exist in the resources directory.
+   2) Configure _the system.properties_ which MUST exist in the
+   resources and must be as following:
+      1) All the properties must be set in the file with the
+      same format.
+      2) _server.shortestPathAlgorithm_ property must be set to
+      be {“_stateless_”, “_stateful_”, “_memoized_”}.
+      3) The number of threads must be less than or equal to
+      the minimum number of query operations to
+      parallelize. This is to avoid runtime errors.
+   3) Build the client jar (it must be located in the default
+   artifact path or change the path as mentioned above).
+   4) Run Main.java
 
 ## Evaluation
 
@@ -283,12 +283,12 @@ In this subsection, a comparison of the different implementations will
 be held while varying the number of queries in the batch and
 the number of updates.
 The following values are fixed:
-    * Number of operations is 1,000 per batch.
-    * Number of nodes in the graph is 50.
-    * No parallelism.
-    * Number of generated batches is 20 batches.
-    The query frequency and the add frequency will be changed in each configuration.
-    * Just one client.
+   * Number of operations is 1,000 per batch.
+   * Number of nodes in the graph is 50.
+   * No parallelism.
+   * Number of generated batches is 20 batches.
+   The query frequency and the add frequency will be changed in each configuration.
+   * Just one client.
 
 #### **First Configuration (balanced):**
 _Query frequency = 0.5 & Add frequency = 0.5_
@@ -338,15 +338,15 @@ _Query frequency = 0.15 & Add frequency = 1_
 
 The main goal of this subsection is to evaluate the effect of
 parallelism. The following values are fixed:
-    * Number of operations is 100,000 per batch.
-    * Number of nodes in the graph is 200.
-    * Query frequency is 0.9.
-    * Add frequency is 1.
-    * Number of generated batches is 5 batches.
-    * Shortest path algorithm is stateless.
-    * Minimum number of queries to parallelize is equal to
-    the number of threads.
-    * Just one client.
+   * Number of operations is 100,000 per batch.
+   * Number of nodes in the graph is 200.
+   * Query frequency is 0.9.
+   * Add frequency is 1.
+   * Number of generated batches is 5 batches.
+   * Shortest path algorithm is stateless.
+   * Minimum number of queries to parallelize is equal to
+   the number of threads.
+   * Just one client.
 
 | **Batch** | **1 thread** | **2 threads** | **4 threads** | **6 threads** | **12 threads** |
 | ----- | -------- | --------- | --------- | --------- | ---------- |
@@ -367,12 +367,12 @@ the other one concerns the parallelization.
 #### **First Configuration (non-parallelized):**
 
 The following values are fixed:
-    * Number of operations is 1,000 per batch.
-    * Number of nodes in the graph is 50.
-    * No parallelism.
-    * Number of generated batches will be 20.
-    * Query frequency is 0.6 and add frequency is 0.5 (balanced).
-    * Number of batches is 5.
+   * Number of operations is 1,000 per batch.
+   * Number of nodes in the graph is 50.
+   * No parallelism.
+   * Number of generated batches will be 20.
+   * Query frequency is 0.6 and add frequency is 0.5 (balanced).
+   * Number of batches is 5.
 
 | **Number Of Clients** | **Stateless** | **Memoized** | **Stateful** |
 | ----- | --------- | -------- | -------- |
