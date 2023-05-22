@@ -90,8 +90,8 @@ The main algorithm to find the shortest path between two
 nodes in an unweighted directed graph is to use
 **breadth-first-search (BFS)** which is used in the three different
 implementations. The key difference between the three
-implementations is whether we will use caching and
-pre-calculated results or not.
+implementations is whether caching and
+pre-calculated results are used or not.
 The three implementations are as follows:
 * **StatelessShortestPath:** doesn’t keep any state or cache
 and calculates each incoming query.
@@ -100,7 +100,7 @@ and calculates each incoming query.
       time.
       2) There is no state or anything that needs to be
       updated after updating the graph.
-      3) We just perform BFS each time a query comes.
+      3) Just performs BFS each time a query comes.
    * **Notes:**
       * works the best when there are a lot of updates
       and low number of queries.
@@ -113,8 +113,8 @@ fetches the answer from the state.
    * **Steps:**
       1) When a query is sent, The answer is fetched
       from the state.
-      2) If the state doesn't contain the answer we would
-      know that the nodes aren't connected, (-1) is returned
+      2) If the state doesn't contain the answer, this implies 
+      that the nodes aren't connected.
       3) After updating the graph, updates the state to be
       consistent.
       4) Doesn't update the state if the updates done
