@@ -143,16 +143,13 @@ it.
       answer, breaks execution (doesn't proceed
       finding the shortest path between A and other
       nodes).
-      **OPTIONAL**: We can save state where to carry on
-      execution next time this adds more space
-      overhead.
       5) If the execution is completed and wasn't broken
       (because B isn't connected to A). Marks that the
       execution for node A is completed (handled in
       completedExecution HashSet). Such that if the
       state didn't contain an entry for the query while
-      having the execution for A finished, we would
-      know that A & B aren't connected.
+      having the execution for A finished, this implies
+      that A & B aren't connected.
       6) If the graph is modified (either by adding or
       removing edges), the state is cleared along with
       the completedExecution set except in the
