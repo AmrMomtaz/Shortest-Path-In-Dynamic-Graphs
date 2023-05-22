@@ -111,11 +111,10 @@ and calculates each incoming query.
 answers in advance and when a query comes it just
 fetches the answer from the state.
    * **Steps:**
-      1) When a query is sent we just fetch the answer
+      1) When a query is sent, The answer is fetched
       from the state.
       2) If the state doesn't contain the answer we would
-      know that the nodes aren't connected, and we
-      would return -1 in that case.
+      know that the nodes aren't connected, (-1) is returned
       3) After updating the graph, updates the state to be
       consistent.
       4) Doesn't update the state if the updates done
@@ -143,6 +142,8 @@ it.
       answer, breaks execution (doesn't proceed
       finding the shortest path between A and other
       nodes).
+      **OPTIONAL**: The state can be saved where to carry on
+      execution next time but this adds more overhead.
       5) If the execution is completed and wasn't broken
       (because B isn't connected to A). Marks that the
       execution for node A is completed (handled in
