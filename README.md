@@ -399,7 +399,7 @@ The following values are fixed:
    * Shortest path algorithm is stateless.
    * Number of threads and the minimum number to parallelize is 2.
 
-| **Batch** | **Non-Parallelized** | **Parallelized** |
+| **Number Of Clients** | **Non-Parallelized** | **Parallelized** |
 | ----- | --------------- | ------------ |
 | **5**     | 3,241           | 3,026        |
 | **6**     | 3,966           | 3,550        |
