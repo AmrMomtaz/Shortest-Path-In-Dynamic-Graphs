@@ -273,7 +273,7 @@ The third part contains the
 evaluations using different numbers of clients varying
 from 5 to 15 clients and their average response time.
 
-In all the tables we measure the average response time in (ms).
+In all the tables the average response time is measured in (ms).
 The same initial graph is used for all the evaluations which is as follows:
 
 ![image](https://github.com/AmrMomtaz/Shortest-Path-In-Dynamic-Graphs/assets/61145262/a9fbecbf-a363-4755-b7e8-034d674c2e66)
@@ -432,5 +432,5 @@ From the previous results we can conclude the following:
    speedup will be improved more when having a larger
    number of consucitive queries and denser graphs.
    * Increasing the number of threads doesn’t necessarily
-   increase the speedup. Since it adds more overhead for the
+   improve the speedup. Since it adds more overhead for the
    creation of the threads and dividing the tasks and combining the results.
